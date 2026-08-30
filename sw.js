@@ -1,4 +1,4 @@
-const CACHE = "korean-daily-3000-direct-v1.4.8-cachefix1";
+const CACHE = "korean-daily-3000-direct-v1.4.8-cachefix2";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {
@@ -22,9 +22,6 @@ self.addEventListener("fetch", event => {
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
 
-  // Always prefer the freshly deployed HTML for navigation. Cache is only
-  // an offline fallback, preventing an older app shell from pinning the UI
-  // to a stale materialized-card count after a successful Pages deploy.
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request, { cache: "no-store" })
