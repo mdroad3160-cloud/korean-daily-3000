@@ -2,6 +2,8 @@ const fs=require('fs');
 const file=process.argv[2]||'_site/index.html';
 let html=fs.readFileSync(file,'utf8');
 const cards=require('./pack-1001-1100-v1.4.10.js');
+const stop=process.env.AUDIT_STOP_AFTER||'';
+const done=s=>{if(stop===s){console.log(`AUDIT CHECKPOINT OK: ${s}`);process.exit(0);}};
 
 if(cards.length!==100)throw new Error(`expected 100 cards, got ${cards.length}`);
 const ranks=cards.map(c=>c.rank);
@@ -23,6 +25,7 @@ for(const c of cards){
  if(!Array.isArray(c.grammar_ranks)||!c.grammar_ranks.length)throw new Error(`Rank ${c.rank}: grammar link missing`);
  if(!String(c.example_jp).trim())throw new Error(`Rank ${c.rank}: Japanese translation missing`);
 }
+done('cards');
 
 const rm=html.match(/const RANK=(\[[\s\S]*?\]);/);
 if(!rm)throw new Error('RANK missing');
@@ -30,6 +33,7 @@ const rankRows=JSON.parse(rm[1]);
 const rankMap=new Map(rankRows.map(x=>[x.rank,x.word]));
 for(const c of cards)if(rankMap.get(c.rank)!==c.word)
   throw new Error(`Rank ${c.rank}: expected ${rankMap.get(c.rank)}, got ${c.word}`);
+done('rank');
 
 const gm=html.match(/const GRAMMAR=(\[[\s\S]*?\]);/);
 if(!gm)throw new Error('GRAMMAR missing');
@@ -37,10 +41,12 @@ const grammarRows=JSON.parse(gm[1]);
 const grammarRanks=new Set(grammarRows.map(x=>x.rank));
 for(const c of cards)for(const g of c.grammar_ranks)
   if(!grammarRanks.has(g))throw new Error(`Rank ${c.rank}: invalid grammar rank ${g}`);
+done('grammar');
 
 const allExamples=new Set([...html.matchAll(/"example":"([^"]+)"/g)].map(m=>m[1]));
 for(const c of cards)if(allExamples.has(c.example))
   throw new Error(`duplicate existing example Rank ${c.rank}: ${c.example}`);
+done('dupes');
 
 const ready='const READY=new Map(PACK.filter(x=>x.ready!==false).map(x=>[x.rank,x]));';
 if(!html.includes(ready))throw new Error('READY marker missing');
