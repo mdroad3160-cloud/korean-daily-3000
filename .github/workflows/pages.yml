@@ -56,8 +56,14 @@ jobs:
       - name: Audit grammar links
         run: AUDIT_STOP_AFTER=grammar node inject-v1.4.10.js _site/index.html
 
-      - name: Audit example duplicates
-        run: AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
+      - name: Audit duplicates 1001-1025
+        run: DUP_MIN=1001 DUP_MAX=1025 AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
+      - name: Audit duplicates 1026-1050
+        run: DUP_MIN=1026 DUP_MAX=1050 AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
+      - name: Audit duplicates 1051-1075
+        run: DUP_MIN=1051 DUP_MAX=1075 AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
+      - name: Audit duplicates 1076-1100
+        run: DUP_MIN=1076 DUP_MAX=1100 AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
 
       - name: Audit and inject Rank 1001-1100
         run: node inject-v1.4.10.js _site/index.html
