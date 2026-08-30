@@ -8,13 +8,14 @@ const packs=[
  require('./pack-626-650-v1.4.js'),
  require('./pack-651-675-v1.4.js'),
  require('./pack-676-700-v1.4.js'),
- require('./pack-701-725-v1.4.1.js')
+ require('./pack-701-725-v1.4.1.js'),
+ require('./pack-726-750-v1.4.2.js')
 ];
 const cards=packs.flat();
-if(cards.length!==225)throw new Error(`expected 225 cards, got ${cards.length}`);
+if(cards.length!==250)throw new Error(`expected 250 cards, got ${cards.length}`);
 const ranks=cards.map(c=>c.rank);
-if(new Set(ranks).size!==225)throw new Error('duplicate Rank in v1.4.1');
-for(let r=501;r<=725;r++)if(!ranks.includes(r))throw new Error(`missing Rank ${r}`);
+if(new Set(ranks).size!==250)throw new Error('duplicate Rank in v1.4.2');
+for(let r=501;r<=750;r++)if(!ranks.includes(r))throw new Error(`missing Rank ${r}`);
 const ex=new Set();
 for(const c of cards){
  if(!c.word||!c.meaning||!c.example||!c.example_jp||!c.grammar_jp)throw new Error(`Rank ${c.rank}: missing required field`);
@@ -33,7 +34,6 @@ const rankMatch=html.match(/const RANK=(\[[\s\S]*?\]);/);
 if(!rankMatch)throw new Error('RANK data missing');
 const rankRows=JSON.parse(rankMatch[1]);
 const rankWord=new Map(rankRows.map(x=>[x.rank,x.word]));
-console.log('NEXT_RANK_WINDOW',JSON.stringify(rankRows.filter(x=>x.rank>=726&&x.rank<=750).map(x=>({rank:x.rank,word:x.word}))));
 for(const c of cards)if(rankWord.get(c.rank)!==c.word)throw new Error(`Rank ${c.rank}: word mismatch ${c.word} != ${rankWord.get(c.rank)}`);
 
 const grammarMatch=html.match(/const GRAMMAR=(\[[\s\S]*?\]);/);
@@ -67,17 +67,15 @@ if(!html.includes('function normalizeExampleToken(')){
  html=html.replace(breakdownMarker,`function normalizeExampleToken(raw){\n  return String(raw||'').replace(/^[^0-9가-힣]+|[^0-9가-힣]+$/g,'');\n}\n\n${breakdownMarker}`);
 }
 
-for(const v of ['1.2','1.3','1.3.1','1.3.2','1.3.3','1.3.4','1.4.0']){
- html=html.replaceAll(`const APP_VERSION="${v}";`,'const APP_VERSION="1.4.1";');
- html=html.replaceAll(`FSRS · v${v}`,'FSRS · v1.4.1');
- html=html.replaceAll(`Web公開版 v${v}`,'Web公開版 v1.4.1');
+for(const v of ['1.2','1.3','1.3.1','1.3.2','1.3.3','1.3.4','1.4.0','1.4.1']){
+ html=html.replaceAll(`const APP_VERSION="${v}";`,'const APP_VERSION="1.4.2";');
+ html=html.replaceAll(`FSRS · v${v}`,'FSRS · v1.4.2');
+ html=html.replaceAll(`Web公開版 v${v}`,'Web公開版 v1.4.2');
 }
-html=html.replaceAll('教材化済み：Rank 1–500','教材化済み：Rank 1–725');
-html=html.replaceAll('教材化済み：Rank 1–600','教材化済み：Rank 1–725');
-html=html.replaceAll('教材化済み：Rank 1–700','教材化済み：Rank 1–725');
-html=html.replaceAll('Rank 1–500（うちRank 40','Rank 1–725（うちRank 40');
-html=html.replaceAll('Rank 1–600（うちRank 40','Rank 1–725（うちRank 40');
-html=html.replaceAll('Rank 1–700（うちRank 40','Rank 1–725（うちRank 40');
+for(const oldEnd of [500,600,700,725]){
+ html=html.replaceAll(`教材化済み：Rank 1–${oldEnd}`,'教材化済み：Rank 1–750');
+ html=html.replaceAll(`Rank 1–${oldEnd}（うちRank 40`,'Rank 1–750（うちRank 40');
+}
 
 if(html.includes('<script type="module">'))html=html.replace('<script type="module">','<script>');
 
@@ -105,11 +103,11 @@ const requiredBindings=[
 for(const sig of requiredBindings)if(!html.includes(sig))throw new Error(`handler missing: ${sig}`);
 
 if(!html.includes('function normalizeExampleToken('))throw new Error('normalizeExampleToken fix missing');
-if(!html.includes('"rank":725,"word":"여성"'))throw new Error('Rank 725 injection failed');
-if(!html.includes('const APP_VERSION="1.4.1";'))throw new Error('version bump failed');
+if(!html.includes('"rank":750,"word":"왜냐하면"'))throw new Error('Rank 750 injection failed');
+if(!html.includes('const APP_VERSION="1.4.2";'))throw new Error('version bump failed');
 if(!html.includes('globalThis.__KOREAN_PENDING_PACKS'))throw new Error('pending pack fix missing');
 if(html.slice(0,html.indexOf('const PACK=')).includes('PACK.push('))throw new Error('PACK TDZ regression detected');
 if(!html.includes('const STORAGE_KEY="korean-daily-3000-state-v01";'))throw new Error('learning-state storage key changed unexpectedly');
 if(!html.includes('const SETTINGS_KEY="korean-daily-3000-settings-v01";'))throw new Error('settings storage key changed unexpectedly');
 fs.writeFileSync(file,html);
-console.log('AUDIT OK: Rank 501-725 mapped; Rank 601-725 morphology+grammar audited; controls wired; PACK TDZ prevented; storage keys preserved; v1.4.1');
+console.log('AUDIT OK: Rank 501-750 mapped; Rank 601-750 morphology+grammar audited; controls wired; PACK TDZ prevented; storage keys preserved; v1.4.2');
