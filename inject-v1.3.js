@@ -22,8 +22,6 @@ for(const c of cards){
  ex.add(c.example);
 }
 
-// Strict audit for newly materialized cards: every surface token in the example
-// must have an explicit lexical/morphological note, and grammar links must exist.
 for(const c of cards.filter(c=>c.rank>=601)){
  if(!c.form_notes||typeof c.form_notes!=='object')throw new Error(`Rank ${c.rank}: form_notes missing`);
  const tokens=(String(c.example).match(/[0-9]+|[가-힣]+/g)||[]);
@@ -31,14 +29,13 @@ for(const c of cards.filter(c=>c.rank>=601)){
  if(!Array.isArray(c.grammar_ranks)||c.grammar_ranks.length===0)throw new Error(`Rank ${c.rank}: grammar_ranks missing`);
 }
 
-// Verify Rank-to-word mapping against the app's canonical Rank 1-3000 list.
 const rankMatch=html.match(/const RANK=(\[[\s\S]*?\]);/);
 if(!rankMatch)throw new Error('RANK data missing');
 const rankRows=JSON.parse(rankMatch[1]);
 const rankWord=new Map(rankRows.map(x=>[x.rank,x.word]));
+console.log('NEXT_RANK_WINDOW',JSON.stringify(rankRows.filter(x=>x.rank>=726&&x.rank<=750).map(x=>({rank:x.rank,word:x.word}))));
 for(const c of cards)if(rankWord.get(c.rank)!==c.word)throw new Error(`Rank ${c.rank}: word mismatch ${c.word} != ${rankWord.get(c.rank)}`);
 
-// Verify links to existing grammar data before injecting anything.
 const grammarMatch=html.match(/const GRAMMAR=(\[[\s\S]*?\]);/);
 if(!grammarMatch)throw new Error('GRAMMAR data missing');
 const grammarRows=JSON.parse(grammarMatch[1]);
@@ -49,13 +46,8 @@ for(const c of cards.filter(c=>c.rank>=601)){
 
 const marker='const GRAMMAR=';
 if(!html.includes(marker))throw new Error('GRAMMAR marker missing');
-// Never execute PACK.push here. Keep injected material in a pending buffer until
-// after the base const PACK declaration has initialized. This prevents the TDZ
-// startup failure that previously broke the app.
 html=html.replace(marker,`globalThis.__KOREAN_PENDING_PACKS=(globalThis.__KOREAN_PENDING_PACKS||[]).concat(${JSON.stringify(cards)});\n${marker}`);
 
-// Legacy build hooks may still have inserted PACK.push before const PACK.
-// Convert those older insertions to the same pending buffer as a fail-safe.
 const packDeclPos=html.indexOf('const PACK=');
 if(packDeclPos<0)throw new Error('PACK declaration missing');
 const beforePack=html.slice(0,packDeclPos).replaceAll(
@@ -69,7 +61,6 @@ const readyMarker='const READY=new Map(PACK.filter(x=>x.ready!==false).map(x=>[x
 if(!html.includes(readyMarker))throw new Error('READY marker missing');
 html=html.replace(readyMarker,`if(globalThis.__KOREAN_PENDING_PACKS?.length){PACK.push(...globalThis.__KOREAN_PENDING_PACKS);globalThis.__KOREAN_PENDING_PACKS=[];}\n${readyMarker}`);
 
-// renderCardBreakdown() requires a conservative token normalizer.
 const breakdownMarker='function renderCardBreakdown(card){';
 if(!html.includes(breakdownMarker))throw new Error('renderCardBreakdown marker missing');
 if(!html.includes('function normalizeExampleToken(')){
@@ -90,12 +81,9 @@ html=html.replaceAll('Rank 1–700（うちRank 40','Rank 1–725（うちRank 4
 
 if(html.includes('<script type="module">'))html=html.replace('<script type="module">','<script>');
 
-// Runtime guard for all primary interactive controls. It does not replace the
-// handlers; it only surfaces unexpected runtime errors in the UI.
 const runtimeGuard=`\n<script>\nwindow.addEventListener('error',e=>{\n  try{const msg=document.getElementById('dataMsg');if(msg)msg.textContent='操作エラー: '+(e.message||'不明なエラー');}catch(_){}\n});\nwindow.addEventListener('unhandledrejection',e=>{\n  try{const msg=document.getElementById('dataMsg');if(msg)msg.textContent='操作エラー: '+(e.reason?.message||e.reason||'不明なエラー');}catch(_){}\n});\nsetTimeout(()=>{\n  const s=document.getElementById('engineStatus');\n  const r=document.getElementById('readyCount');\n  const ready=(r?.textContent||'').trim();\n  if(/^0\\s*\\/\\s*3000$/.test(ready)){\n    if(s){s.textContent='起動エラー · 教材初期化失敗';s.style.color='#fecaca';}\n    const msg=document.getElementById('dataMsg');\n    if(msg)msg.textContent='教材データを読み込めませんでした。';\n  }\n},8000);\n</script>\n`;
 html=html.replace('</body>',runtimeGuard+'</body>');
 
-// Build-time button audit: every visible control must exist and be wired.
 const requiredIds=['startBtn','showAnswerBtn','speakWordBtn','speakExampleBtn','knownBtn','rankSearch','rankLimit','saveSettingsBtn','exportBtn','importProgress','importPack'];
 for(const id of requiredIds){
  if(!html.includes(`id="${id}"`))throw new Error(`button/control missing: ${id}`);
