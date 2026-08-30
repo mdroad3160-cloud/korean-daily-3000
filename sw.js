@@ -22,6 +22,8 @@ self.addEventListener("fetch", event => {
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
 
+  // Network-first, no-store navigation keeps the deployed HTML current.
+  // The cached index remains available only as an offline fallback.
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request, { cache: "no-store" })
