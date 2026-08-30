@@ -2,6 +2,8 @@ const fs=require('fs');
 const file=process.argv[2]||'_site/index.html';
 let html=fs.readFileSync(file,'utf8');
 const cards=require('./pack-1001-1100-v1.4.10.js');
+const patches=require('./patch-1007-1012-v1.4.10.js');
+for(const c of cards)if(patches[c.rank])Object.assign(c,patches[c.rank]);
 const stop=process.env.AUDIT_STOP_AFTER||'';
 const done=s=>{if(stop===s){console.log(`AUDIT CHECKPOINT OK: ${s}`);process.exit(0);}};
 
