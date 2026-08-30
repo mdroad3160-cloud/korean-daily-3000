@@ -50,8 +50,10 @@ jobs:
         run: AUDIT_STOP_AFTER=rank node inject-v1.4.10.js _site/index.html
       - name: Audit grammar links
         run: AUDIT_STOP_AFTER=grammar node inject-v1.4.10.js _site/index.html
-      - name: Audit duplicates 1001-1012
-        run: DUP_MIN=1001 DUP_MAX=1012 AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
+      - name: Audit duplicates 1001-1006
+        run: DUP_MIN=1001 DUP_MAX=1006 AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
+      - name: Audit duplicates 1007-1012
+        run: DUP_MIN=1007 DUP_MAX=1012 AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
       - name: Audit duplicates 1013-1025
         run: DUP_MIN=1013 DUP_MAX=1025 AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
       - name: Audit duplicates 1026-1050
