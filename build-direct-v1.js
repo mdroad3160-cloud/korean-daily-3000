@@ -32,13 +32,16 @@ async function main(){
     ...require('./pack-401-500-v1.2.js')
   ];
 
-  // ---- Content audit before touching the app ----
   if(extraCards.length!==300) throw new Error(`expected 300 new cards, got ${extraCards.length}`);
   const ranks=extraCards.map(c=>c.rank);
   if(new Set(ranks).size!==300) throw new Error('duplicate rank in v1.2 cards');
   for(let r=201;r<=500;r++) if(!ranks.includes(r)) throw new Error(`missing Rank ${r}`);
-  const examples=extraCards.map(c=>c.example);
-  if(new Set(examples).size!==examples.length) throw new Error('duplicate example sentence in v1.2 cards');
+  const seenExamples=new Map(), duplicateExamples=[];
+  for(const c of extraCards){
+    if(seenExamples.has(c.example)) duplicateExamples.push(`#${seenExamples.get(c.example)} & #${c.rank}: ${c.example}`);
+    else seenExamples.set(c.example,c.rank);
+  }
+  if(duplicateExamples.length) throw new Error(`duplicate examples: ${duplicateExamples.join(' | ')}`);
   for(const c of extraCards){
     for(const k of ['word','meaning','example','example_jp','grammar_jp']) if(!String(c[k]||'').trim()) throw new Error(`Rank ${c.rank}: missing ${k}`);
     if(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(JSON.stringify(c))) throw new Error(`Rank ${c.rank}: control character`);
@@ -77,12 +80,10 @@ async function main(){
   if(!captured || !captured.includes('<!doctype html>')) throw new Error('wrapper did not generate HTML');
   let html=captured;
 
-  // Inject audited cards before GRAMMAR/READY are built.
   const grammarMarker='const GRAMMAR=';
   if(!html.includes(grammarMarker)) throw new Error('GRAMMAR marker not found');
   html=html.replace(grammarMarker,`PACK.push(...${JSON.stringify(extraCards)});\n${grammarMarker}`);
 
-  // Version marker.
   html=html.replace('const APP_VERSION="0.9";','const APP_VERSION="1.2";');
   html=html.replaceAll('Web公開版 v0.9','Web公開版 v1.2');
 
