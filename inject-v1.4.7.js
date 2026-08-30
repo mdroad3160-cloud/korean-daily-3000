@@ -1,0 +1,43 @@
+const fs=require('fs');
+const file=process.argv[2]||'_site/index.html';
+let html=fs.readFileSync(file,'utf8');
+const cards=require('./pack-851-875-v1.4.7.js');
+if(cards.length!==25)throw new Error(`expected 25 cards, got ${cards.length}`);
+const ranks=cards.map(c=>c.rank);
+if(new Set(ranks).size!==25)throw new Error('duplicate Rank in v1.4.7');
+for(let r=851;r<=875;r++)if(!ranks.includes(r))throw new Error(`missing Rank ${r}`);
+const seen=new Set();
+for(const c of cards){
+ for(const k of ['word','meaning','example','example_jp','grammar_jp','form_notes','note','register'])if(!c[k])throw new Error(`Rank ${c.rank}: missing ${k}`);
+ if(c.ready!==true)throw new Error(`Rank ${c.rank}: not ready`);
+ if(seen.has(c.example))throw new Error(`duplicate new example: ${c.example}`);seen.add(c.example);
+ const tokens=String(c.example).match(/[0-9]+|[가-힣]+/g)||[];
+ for(const t of tokens)if(!c.form_notes[t])throw new Error(`Rank ${c.rank}: unexplained token ${t}`);
+ for(const k of Object.keys(c.form_notes))if(!tokens.includes(k))throw new Error(`Rank ${c.rank}: stray form note ${k}`);
+ if(!Array.isArray(c.grammar)||!c.grammar.length)throw new Error(`Rank ${c.rank}: grammar point missing`);
+ if(!Array.isArray(c.grammar_ranks)||!c.grammar_ranks.length)throw new Error(`Rank ${c.rank}: grammar link missing`);
+}
+const rm=html.match(/const RANK=(\[[\s\S]*?\]);/);if(!rm)throw new Error('RANK missing');
+const rankRows=JSON.parse(rm[1]);const rankMap=new Map(rankRows.map(x=>[x.rank,x.word]));
+for(const c of cards)if(rankMap.get(c.rank)!==c.word)throw new Error(`Rank ${c.rank}: expected ${rankMap.get(c.rank)}, got ${c.word}`);
+const gm=html.match(/const GRAMMAR=(\[[\s\S]*?\]);/);if(!gm)throw new Error('GRAMMAR missing');
+const grammarRanks=new Set(JSON.parse(gm[1]).map(x=>x.rank));
+for(const c of cards)for(const g of c.grammar_ranks)if(!grammarRanks.has(g))throw new Error(`Rank ${c.rank}: invalid grammar rank ${g}`);
+const allExamples=new Set([...html.matchAll(/"example":"([^"]+)"/g)].map(m=>m[1]));
+for(const c of cards)if(allExamples.has(c.example))throw new Error(`duplicate existing example Rank ${c.rank}: ${c.example}`);
+const ready='const READY=new Map(PACK.filter(x=>x.ready!==false).map(x=>[x.rank,x]));';
+if(!html.includes(ready))throw new Error('READY marker missing');
+html=html.replace(ready,`PACK.push(...${JSON.stringify(cards)});\n${ready}`);
+html=html.replaceAll('const APP_VERSION="1.4.6";','const APP_VERSION="1.4.7";')
+         .replaceAll('FSRS · v1.4.6','FSRS · v1.4.7')
+         .replaceAll('Web公開版 v1.4.6','Web公開版 v1.4.7');
+html=html.replaceAll('教材化済み：Rank 1–850','教材化済み：Rank 1–875')
+         .replaceAll('Rank 1–850（うちRank 40','Rank 1–875（うちRank 40');
+const required=['startBtn','showAnswerBtn','speakWordBtn','speakExampleBtn','knownBtn','saveSettingsBtn','exportBtn','importProgress','importPack','extra5','extra10','extra20','extraUnlimited'];
+for(const id of required)if(!html.includes(`id="${id}"`))throw new Error(`control missing ${id}`);
+const eventChecks=['startBtn").addEventListener','showAnswerBtn").addEventListener','speakWordBtn").addEventListener','speakExampleBtn").addEventListener','knownBtn").addEventListener','[data-grade]','rankSearch").addEventListener','rankLimit").addEventListener','saveSettingsBtn").addEventListener','exportBtn").addEventListener','importProgress").addEventListener','importPack").addEventListener'];
+for(const s of eventChecks)if(!html.includes(s))throw new Error(`event binding missing: ${s}`);
+for(const s of ['const STORAGE_KEY="korean-daily-3000-state-v01";','const SETTINGS_KEY="korean-daily-3000-settings-v01";','function normalizeExampleToken(','"rank":875,"word":"미리"','const APP_VERSION="1.4.7";'])if(!html.includes(s))throw new Error(`required invariant missing: ${s}`);
+if(html.slice(0,html.indexOf('const PACK=')).includes('PACK.push('))throw new Error('PACK TDZ regression');
+fs.writeFileSync(file,html);
+console.log('AUDIT OK: Rank 851-875 mapped; all example tokens explained; grammar links valid; duplicate examples absent; controls/events/storage/PACK invariants preserved; v1.4.7');
