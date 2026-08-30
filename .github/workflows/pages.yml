@@ -27,6 +27,8 @@ jobs:
       - name: Build audited standalone app
         run: |
           rm -rf _site
+          node --check pack-876-900-v1.4.8.js
+          node --check inject-v1.4.8.js
           node normalize-build-input.js index-upload.html _index-upload-build.html
           NODE_OPTIONS="--require=$PWD/pack-v1.2-hook.js" node build-direct-v1.js index-v09.html _index-upload-build.html _site/index.html
           node inject-v1.3.js _site/index.html
@@ -35,6 +37,7 @@ jobs:
           node inject-v1.4.5.js _site/index.html
           node inject-v1.4.6.js _site/index.html
           node inject-v1.4.7.js _site/index.html
+          node inject-v1.4.8.js _site/index.html
           cp manifest.webmanifest _site/manifest.webmanifest
           cp sw.js _site/sw.js
           cp _site/index.html _site/404.html
