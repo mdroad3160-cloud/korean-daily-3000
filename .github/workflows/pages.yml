@@ -32,6 +32,7 @@ jobs:
           node inject-v1.3.js _site/index.html
           node inject-v1.4.3.js _site/index.html
           node inject-v1.4.4.js _site/index.html
+          node inject-v1.4.5.js _site/index.html
           cp manifest.webmanifest _site/manifest.webmanifest
           cp sw.js _site/sw.js
           cp _site/index.html _site/404.html
