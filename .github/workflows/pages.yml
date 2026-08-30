@@ -47,6 +47,18 @@ jobs:
           node inject-v1.4.8.js _site/index.html
           node inject-v1.4.9.js _site/index.html
 
+      - name: Audit cards and token coverage
+        run: AUDIT_STOP_AFTER=cards node inject-v1.4.10.js _site/index.html
+
+      - name: Audit Rank mapping
+        run: AUDIT_STOP_AFTER=rank node inject-v1.4.10.js _site/index.html
+
+      - name: Audit grammar links
+        run: AUDIT_STOP_AFTER=grammar node inject-v1.4.10.js _site/index.html
+
+      - name: Audit example duplicates
+        run: AUDIT_STOP_AFTER=dupes node inject-v1.4.10.js _site/index.html
+
       - name: Audit and inject Rank 1001-1100
         run: node inject-v1.4.10.js _site/index.html
 
