@@ -28,11 +28,9 @@ jobs:
         run: |
           rm -rf _site
           node normalize-build-input.js index-upload.html _index-upload-build.html
-          node - <<'NODE'
-          const fs=require('fs');const s=fs.readFileSync('_index-upload-build.html','utf8');const m=s.match(/const RANK=(\[[\s\S]*?\]);/);const a=JSON.parse(m[1]);console.log('NEXT_RANKS '+a.filter(x=>x.rank>=751&&x.rank<=775).map(x=>x.rank+':'+x.word).join('|'));
-          NODE
           NODE_OPTIONS="--require=$PWD/pack-v1.2-hook.js" node build-direct-v1.js index-v09.html _index-upload-build.html _site/index.html
           node inject-v1.3.js _site/index.html
+          node inject-v1.4.3.js _site/index.html
           cp manifest.webmanifest _site/manifest.webmanifest
           cp sw.js _site/sw.js
           cp _site/index.html _site/404.html
