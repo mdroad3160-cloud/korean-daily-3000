@@ -1,1 +1,21 @@
-<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=./index-upload.html"><title>韓国語 Daily 3000</title><p><a href="./index-upload.html">韓国語 Daily 3000 を開く</a></p>
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>韓国語 Daily 3000</title>
+<p id="status">アプリを読み込み中...</p>
+<script>
+(async()=>{
+  try{
+    const r=await fetch('./index-upload.html?fix=3',{cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    let html=await r.text();
+    html=html.replace('let queue=[], current=null;','let queue=[], current=null;\nlet extraAllowance = 0;\nlet extraUnlimitedMode = false;');
+    html=html.replace('let extraAllowance = 0;\nlet extraUnlimitedMode = false;\n\nfunction remainingNewCards()','function remainingNewCards()');
+    document.open();
+    document.write(html);
+    document.close();
+  }catch(e){
+    document.getElementById('status').textContent='読み込みに失敗しました: '+e.message;
+  }
+})();
+</script>
