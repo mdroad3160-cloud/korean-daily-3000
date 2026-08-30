@@ -27,7 +27,7 @@ jobs:
       - name: Build audited standalone app
         run: |
           rm -rf _site
-          node build-direct-v1.js index-v09.html index-upload.html _site/index.html
+          NODE_OPTIONS="--require=$PWD/pack-v1.2-hook.js" node build-direct-v1.js index-v09.html index-upload.html _site/index.html
           cp manifest.webmanifest _site/manifest.webmanifest
           cp sw.js _site/sw.js
           cp _site/index.html _site/404.html
