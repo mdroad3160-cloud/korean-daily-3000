@@ -1,5 +1,5 @@
+global.EXAMPLE_FUNCTION_WORDS={};
 const Module=require('module');
-const path=require('path');
 const fixes=require('./pack-v1.2-fixes.js');
 const originalLoad=Module._load;
 Module._load=function(request,parent,isMain){
