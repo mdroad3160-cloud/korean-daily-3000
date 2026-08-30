@@ -1,0 +1,11 @@
+{
+  "name": "韓国語 Daily 3000",
+  "short_name": "韓国語3000",
+  "description": "日常会話で使う韓国語頻出語を、発音・例文・文法・間隔反復で学ぶWebアプリ",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7fb",
+  "theme_color": "#111827"
+}
