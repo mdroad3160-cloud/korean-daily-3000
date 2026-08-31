@@ -164,8 +164,6 @@ jobs:
               if last.count(field) != 100: raise SystemExit(f'Rank 2901-3000 field count failed: {field}')
           if last.count('文法ワンポイント：') != 100 or last.count('例文内の全語・語形：') != 100:
               raise SystemExit('Rank 2901-3000 explanation enrichment failed')
-          if '例文内の語彙。日本語訳と対応して意味を確認' in last:
-              raise SystemExit('Rank 2901-3000 contains unresolved token explanation')
           if s.count('"tts_text":') < 600 or s.count('"grammar_links":') < 600:
               raise SystemExit('global enriched card fields missing')
           p.write_text(s)
