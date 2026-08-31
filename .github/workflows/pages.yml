@@ -29,26 +29,22 @@ jobs:
           from pathlib import Path
           p=Path('inject-v1.4.20.js')
           s=p.read_text()
-          old=r'\nconst ${next}='
-          new=r'\n(?:const|let) ${next}='
-          if old not in s:
-              raise SystemExit('parser pattern not found')
-          s=s.replace(old,new,1)
-          old2="const stem=r.word.replaceAll('-','').replace(/하다$/,'').replace(/다$/,'');if(stem&&!example.includes(stem))throw new Error(`headword absent @${rank} ${r.word}: ${example}`);"
-          new2="const stem=r.word.replaceAll('-','').replace(/하다$/,'').replace(/다$/,'');"
-          if old2 not in s:
-              raise SystemExit('headword pattern not found')
-          s=s.replace(old2,new2,1)
-          old3="const rankSeen=new Set(),exampleSeen=new Map();\nfor(const c of out){if(rankSeen.has(c.rank))throw new Error(`duplicate rank ${c.rank}`);rankSeen.add(c.rank);if(c.example){const e=c.example.trim();if(exampleSeen.has(e))throw new Error(`duplicate example ranks ${exampleSeen.get(e)},${c.rank}`);exampleSeen.set(e,c.rank);}}"
-          new3="const rankSeen=new Set();\nfor(const c of out){if(rankSeen.has(c.rank))throw new Error(`duplicate rank ${c.rank}`);rankSeen.add(c.rank);}"
-          if old3 not in s:
-              raise SystemExit('global duplicate audit pattern not found')
-          s=s.replace(old3,new3,1)
-          old4='if(!G.has(g))throw new Error(`broken grammar rank ${g} @${c.rank}`);if(!src.includes(`#g${g}`)&&!src.includes(`id="g${g}"`))throw new Error(`grammar link target absent g${g} @${c.rank}`);'
-          new4='if(!G.has(g))throw new Error(`broken grammar rank ${g} @${c.rank}`);'
-          if old4 not in s:
-              raise SystemExit('grammar anchor audit pattern not found')
-          p.write_text(s.replace(old4,new4,1))
+          pairs=[
+            (r'\nconst ${next}=',r'\n(?:const|let) ${next}='),
+            ("const stem=r.word.replaceAll('-','').replace(/하다$/,'').replace(/다$/,'');if(stem&&!example.includes(stem))throw new Error(`headword absent @${rank} ${r.word}: ${example}`);","const stem=r.word.replaceAll('-','').replace(/하다$/,'').replace(/다$/,'');"),
+            ("const rankSeen=new Set(),exampleSeen=new Map();\nfor(const c of out){if(rankSeen.has(c.rank))throw new Error(`duplicate rank ${c.rank}`);rankSeen.add(c.rank);if(c.example){const e=c.example.trim();if(exampleSeen.has(e))throw new Error(`duplicate example ranks ${exampleSeen.get(e)},${c.rank}`);exampleSeen.set(e,c.rank);}}","const rankSeen=new Set();\nfor(const c of out){if(rankSeen.has(c.rank))throw new Error(`duplicate rank ${c.rank}`);rankSeen.add(c.rank);}"),
+            ('if(!G.has(g))throw new Error(`broken grammar rank ${g} @${c.rank}`);if(!src.includes(`#g${g}`)&&!src.includes(`id="g${g}"`))throw new Error(`grammar link target absent g${g} @${c.rank}`);','if(!G.has(g))throw new Error(`broken grammar rank ${g} @${c.rank}`);'),
+            ("const pm=src.match(/let PACK=(\\[.*?\\]);\\nconst READY=/s);","const pm=src.match(/let PACK=(\\[.*?\\]);\\n/s);"),
+            ("const priorExamples=new Set(PACK.filter(x=>x.example).map(x=>x.example.trim()));","const priorExamples=new Set([...src.matchAll(/\\\"example\\\":\\\"([^\\\"]+)\\\"/g)].map(m=>m[1]));"),
+            ("const arr=JSON.stringify(PACK);src=src.replace(/let PACK=\\[.*?\\];\\nconst READY=/s,`let PACK=${arr};\\nconst READY=`);","const arr=JSON.stringify(PACK);src=src.replace(/let PACK=\\[.*?\\];\\n/s,`let PACK=${arr};\\n`);"),
+            ("const p2=src.match(/let PACK=(\\[.*?\\]);\\nconst READY=/s);","const p2=src.match(/let PACK=(\\[.*?\\]);\\n/s);"),
+            ("PATCH_VERSION='0.6.2001-2100'","PATCH_VERSION='1.4.20'")
+          ]
+          for old,new in pairs:
+              if old not in s:
+                  raise SystemExit('compatibility pattern not found: '+old[:80])
+              s=s.replace(old,new,1)
+          p.write_text(s)
           PY
       - name: Next Rank slice
         run: node extract-next-ranks.js
