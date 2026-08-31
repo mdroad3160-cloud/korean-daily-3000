@@ -1,1 +1,1 @@
-const fs=require('fs');const h=fs.readFileSync('index-upload.html','utf8');const m=h.match(/const RANK=(\[[\s\S]*?\]);/);if(!m)throw Error('RANK missing');const a=JSON.parse(m[1]);console.log(JSON.stringify(a.filter(x=>x.rank>=2201&&x.rank<=2300).map(x=>[x.rank,x.word])));
+const fs=require('fs');const h=fs.readFileSync('index-upload.html','utf8');const m=h.match(/const RANK=(\[[\s\S]*?\]);/);if(!m)throw Error('RANK missing');const a=JSON.parse(m[1]);console.log(JSON.stringify(a.filter(x=>x.rank>=2701&&x.rank<=2800).map(x=>[x.rank,x.word])));
