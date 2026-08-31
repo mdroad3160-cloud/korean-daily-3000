@@ -48,6 +48,12 @@ jobs:
           node --check pack-1501-1600-v1.4.15.js
           node --check fix-pack-1501-1600-v1.4.15.js
           node --check inject-v1.4.15.js
+          node --check raw-1601-1625-v1.4.16.js
+          node --check raw-1626-1650-v1.4.16.js
+          node --check raw-1651-1675-v1.4.16.js
+          node --check raw-1676-1700-v1.4.16.js
+          node --check pack-1601-1700-v1.4.16.js
+          node --check inject-v1.4.16.js
       - name: Build stable through Rank 1000
         run: |
           rm -rf _site
@@ -73,6 +79,8 @@ jobs:
         run: node inject-v1.4.14.js _site/index.html
       - name: Audit and inject Rank 1501-1600
         run: NODE_OPTIONS="--require=$PWD/fix-pack-1501-1600-v1.4.15.js" node inject-v1.4.15.js _site/index.html
+      - name: Audit and inject Rank 1601-1700
+        run: node inject-v1.4.16.js _site/index.html
       - name: Finalize app shell
         run: |
           cp manifest.webmanifest _site/manifest.webmanifest
