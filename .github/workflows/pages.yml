@@ -131,7 +131,18 @@ jobs:
       - name: Audit and inject Rank 1901-2000
         run: node inject-v1.4.19.js _site/index.html
       - name: Audit and inject Rank 2001-2100
-        run: node inject-v1.4.20.js _site/index.html
+        continue-on-error: true
+        run: node inject-v1.4.20.js _site/index.html > rank-2001-2100-audit.log 2>&1
+      - name: Upload Rank 2001-2100 audit diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rank-2001-2100-audit
+          path: rank-2001-2100-audit.log
+      - name: Enforce Rank 2001-2100 audit
+        run: |
+          cat rank-2001-2100-audit.log
+          grep -q '^OK Rank 2001-2100:' rank-2001-2100-audit.log
       - name: Finalize app shell
         run: |
           cp manifest.webmanifest _site/manifest.webmanifest
