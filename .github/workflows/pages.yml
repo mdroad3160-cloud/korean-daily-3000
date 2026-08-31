@@ -132,18 +132,51 @@ jobs:
       - name: Audit and inject Rank 1901-2000
         run: node inject-v1.4.19.js _site/index.html
       - name: Audit and inject Rank 2001-2100
-        continue-on-error: true
-        run: node inject-v1.4.20.js _site/index.html > rank-2001-2100-audit.log 2>&1
-      - name: Upload Rank 2001-2100 audit diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: rank-2001-2100-audit
-          path: rank-2001-2100-audit.log
-      - name: Enforce Rank 2001-2100 audit
+        run: node inject-v1.4.20.js _site/index.html
+      - name: Final Rank 2100 UI and regression audit
         run: |
-          cat rank-2001-2100-audit.log
-          grep -q '^OK Rank 2001-2100:' rank-2001-2100-audit.log
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('_site/index.html')
+          s=p.read_text()
+          replacements={
+            'FSRS · v1.4.19':'FSRS · v1.4.20',
+            'Web公開版 v1.4.19':'Web公開版 v1.4.20',
+            '教材化済み：Rank 1–2000':'教材化済み：Rank 1–2100'
+          }
+          for old,new in replacements.items():
+              if old not in s:
+                  raise SystemExit(f'UI label missing: {old}')
+              s=s.replace(old,new)
+          required=[
+            'const APP_VERSION="1.4.20";',
+            '이 개념은 아직 잘 이해가 안 돼요.',
+            '자꾸 오류가 나서 짜증이 나요.',
+            'id="startBtn"','id="showAnswerBtn"','id="knownBtn"',
+            'id="saveSettingsBtn"','id="cloudSyncNowBtn"','id="exportBtn"','id="importProgress"',
+            'document.getElementById("startBtn").addEventListener("click"',
+            'document.getElementById("showAnswerBtn").addEventListener("click"',
+            'document.getElementById("knownBtn").addEventListener("click"',
+            'document.getElementById("saveSettingsBtn").addEventListener("click"',
+            'syncBtn.addEventListener("click",()=>syncCloudCore(true))',
+            'document.getElementById("exportBtn").addEventListener("click"',
+            'document.getElementById("importProgress").addEventListener("change"',
+            'korean-daily-3000-state-v01','korean-daily-3000-settings-v01','korean-daily-3000-sync-v01',
+            'function initCloudSync(','function syncCloudCore(','function queueCloudSave(',
+            'const READY=new Map(PACK.filter'
+          ]
+          for token in required:
+              if token not in s:
+                  raise SystemExit(f'regression token missing: {token}')
+          pack=s.find('const PACK=')
+          if pack < 0: pack=s.find('let PACK=')
+          push=s.rfind('PACK.push(')
+          ready=s.find('const READY=new Map(PACK.filter')
+          if not (0 <= pack < push < ready):
+              raise SystemExit(f'PACK initialization order invalid: {pack}, {push}, {ready}')
+          p.write_text(s)
+          print('OK final Rank 2100 UI/buttons/events/SRS-settings-sync keys/PACK order/cloud regression audit')
+          PY
       - name: Finalize app shell
         run: |
           cp manifest.webmanifest _site/manifest.webmanifest
