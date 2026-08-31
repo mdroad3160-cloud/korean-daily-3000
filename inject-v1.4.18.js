@@ -5,6 +5,7 @@ const cards=require('./pack-1801-1900-v1.4.18.js');
 function retokenize(c){const tokens=String(c.example).match(/[0-9]+|[가-힣]+/g)||[];c.form_notes={};for(const t of tokens)c.form_notes[t]=`${t}（例文中の語彙・活用形。日本語訳と文脈に対応）`;c.tts_text=c.example;}
 const c1812=cards.find(c=>c.rank===1812);if(c1812){c1812.example='옷에 커피를 묻혀서 얼른 닦았어요.';c1812.example_jp='服にコーヒーを付けてしまって、急いで拭きました。';c1812.note='묻히다 は「付ける／埋める」など文脈で意味が変わります。自然に「〜を付けてしまう」のようにも使います。';c1812.grammar=['V+아/어서','V+았/었/였','-요'];c1812.grammar_ranks=[23,4,9];c1812.grammar_jp='理由・順序の -아/어서 と過去形 -았/었-、丁寧語尾 -요 を確認します。';retokenize(c1812);}
 const c1814=cards.find(c=>c.rank===1814);if(c1814){c1814.example='그 사람을 거지라고 부르면 안 돼요.';c1814.example_jp='その人を物乞いと呼んではいけません。';c1814.note='거지 は「物乞い」を指し、人に向けると強く侮辱的になり得るため注意が必要です。';c1814.grammar=['V+(으)면','-요'];c1814.grammar_ranks=[22,9];c1814.grammar_jp='条件 -(으)면 と丁寧語尾 -요 を確認します。';retokenize(c1814);}
+const c1869=cards.find(c=>c.rank===1869);if(c1869){c1869.example='시간은 오후든 저녁이든 저는 상관없어요.';c1869.example_jp='時間は午後でも夕方でも、私は構いません。';c1869.note='상관없다「関係ない・構わない」が日常会話で非常に頻出です。상관 は単独では「関係」の意味です。';c1869.grammar=['-은/는','-요'];c1869.grammar_ranks=[5,9];c1869.grammar_jp='話題・対比の -은/는 と丁寧語尾 -요 を確認します。';retokenize(c1869);}
 if(cards.length!==100)throw new Error(`expected 100 cards, got ${cards.length}`);
 const ranks=cards.map(c=>c.rank);if(new Set(ranks).size!==100)throw new Error('duplicate Rank in v1.4.18');for(let r=1801;r<=1900;r++)if(!ranks.includes(r))throw new Error(`missing Rank ${r}`);
 const seen=new Set();
