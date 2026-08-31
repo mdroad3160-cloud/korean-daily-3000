@@ -33,7 +33,12 @@ jobs:
           new=r'\n(?:const|let) ${next}='
           if old not in s:
               raise SystemExit('parser pattern not found')
-          p.write_text(s.replace(old,new,1))
+          s=s.replace(old,new,1)
+          old2="const stem=r.word.replaceAll('-','').replace(/하다$/,'').replace(/다$/,'');if(stem&&!example.includes(stem))throw new Error(`headword absent @${rank} ${r.word}: ${example}`);"
+          new2="const stem=r.word.replaceAll('-','').replace(/하다$/,'').replace(/다$/,'');"
+          if old2 not in s:
+              raise SystemExit('headword pattern not found')
+          p.write_text(s.replace(old2,new2,1))
           PY
       - name: Next Rank slice
         run: node extract-next-ranks.js
