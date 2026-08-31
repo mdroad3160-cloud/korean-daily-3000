@@ -153,7 +153,7 @@ jobs:
           ready=s.find('const READY=new Map(PACK.filter')
           push=s.rfind('PACK.push(',0,ready)
           if not (0 <= pack < push < ready): raise SystemExit(f'PACK initialization order invalid: {pack}, {push}, {ready}')
-          prefix=s[:ready]
+          prefix=s[pack:ready]
           for rank in (2701,2800,2801,2900,2901,3000):
               if len(re.findall(rf'"rank"\s*:\s*{rank}(?=[,}}])',prefix)) != 1:
                   raise SystemExit(f'Rank {rank} occurrence audit failed')
