@@ -27,6 +27,8 @@ jobs:
         run: node extract-next-ranks.js
       - name: Next Rank 1501-1600 slice
         run: node extract-ranks-1501-1600.js
+      - name: Next Rank 1601-1700 slice
+        run: node extract-ranks-1601-1700.js
       - name: Syntax audit
         run: |
           node --check pack-876-900-v1.4.8.js
