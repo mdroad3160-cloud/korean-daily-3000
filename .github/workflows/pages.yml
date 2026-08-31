@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Next Rank slice
+        run: node extract-next-ranks.js
       - name: Syntax audit
         run: |
           node --check pack-876-900-v1.4.8.js
@@ -52,52 +54,10 @@ jobs:
           node inject-v1.4.9.js _site/index.html
       - name: Audit and inject Rank 1001-1100
         run: node inject-v1.4.10.js _site/index.html
-      - name: Audit cards and token coverage 1101-1200
-        run: AUDIT_STOP_AFTER=cards node inject-v1.4.11.js _site/index.html
-      - name: Audit Rank mapping 1101-1200
-        run: AUDIT_STOP_AFTER=rank node inject-v1.4.11.js _site/index.html
-      - name: Audit grammar links 1101-1200
-        run: AUDIT_STOP_AFTER=grammar node inject-v1.4.11.js _site/index.html
-      - name: Audit duplicates 1101-1125
-        run: DUP_MIN=1101 DUP_MAX=1125 AUDIT_STOP_AFTER=dupes node inject-v1.4.11.js _site/index.html
-      - name: Audit duplicates 1126-1150
-        run: DUP_MIN=1126 DUP_MAX=1150 AUDIT_STOP_AFTER=dupes node inject-v1.4.11.js _site/index.html
-      - name: Audit duplicates 1151-1175
-        run: DUP_MIN=1151 DUP_MAX=1175 AUDIT_STOP_AFTER=dupes node inject-v1.4.11.js _site/index.html
-      - name: Audit duplicates 1176-1200
-        run: DUP_MIN=1176 DUP_MAX=1200 AUDIT_STOP_AFTER=dupes node inject-v1.4.11.js _site/index.html
       - name: Audit and inject Rank 1101-1200
         run: node inject-v1.4.11.js _site/index.html
-      - name: Audit cards and token coverage 1201-1300
-        run: AUDIT_STOP_AFTER=cards node inject-v1.4.12.js _site/index.html
-      - name: Audit Rank mapping 1201-1300
-        run: AUDIT_STOP_AFTER=rank node inject-v1.4.12.js _site/index.html
-      - name: Audit grammar links 1201-1300
-        run: AUDIT_STOP_AFTER=grammar node inject-v1.4.12.js _site/index.html
-      - name: Audit duplicates 1201-1225
-        run: DUP_MIN=1201 DUP_MAX=1225 AUDIT_STOP_AFTER=dupes node inject-v1.4.12.js _site/index.html
-      - name: Audit duplicates 1226-1250
-        run: DUP_MIN=1226 DUP_MAX=1250 AUDIT_STOP_AFTER=dupes node inject-v1.4.12.js _site/index.html
-      - name: Audit duplicates 1251-1275
-        run: DUP_MIN=1251 DUP_MAX=1275 AUDIT_STOP_AFTER=dupes node inject-v1.4.12.js _site/index.html
-      - name: Audit duplicates 1276-1300
-        run: DUP_MIN=1276 DUP_MAX=1300 AUDIT_STOP_AFTER=dupes node inject-v1.4.12.js _site/index.html
       - name: Audit and inject Rank 1201-1300
         run: node inject-v1.4.12.js _site/index.html
-      - name: Audit cards and token coverage 1301-1400
-        run: AUDIT_STOP_AFTER=cards node inject-v1.4.13.js _site/index.html
-      - name: Audit Rank mapping 1301-1400
-        run: AUDIT_STOP_AFTER=rank node inject-v1.4.13.js _site/index.html
-      - name: Audit grammar links 1301-1400
-        run: AUDIT_STOP_AFTER=grammar node inject-v1.4.13.js _site/index.html
-      - name: Audit duplicates 1301-1325
-        run: DUP_MIN=1301 DUP_MAX=1325 AUDIT_STOP_AFTER=dupes node inject-v1.4.13.js _site/index.html
-      - name: Audit duplicates 1326-1350
-        run: DUP_MIN=1326 DUP_MAX=1350 AUDIT_STOP_AFTER=dupes node inject-v1.4.13.js _site/index.html
-      - name: Audit duplicates 1351-1375
-        run: DUP_MIN=1351 DUP_MAX=1375 AUDIT_STOP_AFTER=dupes node inject-v1.4.13.js _site/index.html
-      - name: Audit duplicates 1376-1400
-        run: DUP_MIN=1376 DUP_MAX=1400 AUDIT_STOP_AFTER=dupes node inject-v1.4.13.js _site/index.html
       - name: Audit and inject Rank 1301-1400
         run: node inject-v1.4.13.js _site/index.html
       - name: Finalize app shell
