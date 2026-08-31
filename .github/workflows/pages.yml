@@ -64,6 +64,9 @@ jobs:
           node --check raw-1776-1800-v1.4.17.js
           node --check pack-1701-1800-v1.4.17.js
           node --check inject-v1.4.17.js
+          node --check raw-1801-1900-v1.4.18.js
+          node --check pack-1801-1900-v1.4.18.js
+          node --check inject-v1.4.18.js
       - name: Build stable through Rank 1000
         run: |
           rm -rf _site
@@ -93,6 +96,8 @@ jobs:
         run: node inject-v1.4.16.js _site/index.html
       - name: Audit and inject Rank 1701-1800
         run: node inject-v1.4.17.js _site/index.html
+      - name: Audit and inject Rank 1801-1900
+        run: node inject-v1.4.18.js _site/index.html
       - name: Finalize app shell
         run: |
           cp manifest.webmanifest _site/manifest.webmanifest
