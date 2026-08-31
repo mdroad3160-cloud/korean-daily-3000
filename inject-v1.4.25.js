@@ -33,7 +33,7 @@ function tokenNote(raw,headword,meaning,alts=[]){
   for(const [re,d] of FORM_DESC)if(re.test(t))return `${t}：${d}。例文中の活用語形として文脈上の意味を確認`;
   return `${t}：例文中の語彙「${t}」。この語形が日本語訳の対応部分を表す`;
 }
-const alt={2524:['깔'],2533:['빠져나'],2535:['띄'],2552:['흰'],2561:['돌아가'],2581:['이뤄'],2584:['부담스러'],2587:['떨어뜨'],2588:['뭉'],2591:['번'],2592:['잘'],2595:['주어']};
+const alt={2540:['와'],2524:['깔'],2533:['빠져나'],2535:['띄'],2552:['흰'],2561:['돌아가'],2577:['내줄'],2581:['이뤄'],2584:['부담스러'],2587:['떨어뜨'],2588:['뭉'],2591:['번'],2592:['잘'],2595:['주어']};
 const priorEx=new Set([...src.matchAll(/"example":"([^"]+)"/g)].map(m=>m[1])),newEx=new Set(),cards=[];
 for(let i=0;i<100;i++){
   const rank=START+i,r=ranks[i],[meaning,jp,ko,register,gr,note]=S[i];
