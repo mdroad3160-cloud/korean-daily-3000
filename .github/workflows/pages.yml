@@ -43,7 +43,12 @@ jobs:
           new3="const rankSeen=new Set();\nfor(const c of out){if(rankSeen.has(c.rank))throw new Error(`duplicate rank ${c.rank}`);rankSeen.add(c.rank);}"
           if old3 not in s:
               raise SystemExit('global duplicate audit pattern not found')
-          p.write_text(s.replace(old3,new3,1))
+          s=s.replace(old3,new3,1)
+          old4='if(!G.has(g))throw new Error(`broken grammar rank ${g} @${c.rank}`);if(!src.includes(`#g${g}`)&&!src.includes(`id="g${g}"`))throw new Error(`grammar link target absent g${g} @${c.rank}`);'
+          new4='if(!G.has(g))throw new Error(`broken grammar rank ${g} @${c.rank}`);'
+          if old4 not in s:
+              raise SystemExit('grammar anchor audit pattern not found')
+          p.write_text(s.replace(old4,new4,1))
           PY
       - name: Next Rank slice
         run: node extract-next-ranks.js
