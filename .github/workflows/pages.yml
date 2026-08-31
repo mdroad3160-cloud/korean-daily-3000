@@ -101,6 +101,8 @@ jobs:
           node --check inject-v1.4.24.js
           node --check pack-2501-2600-v1.4.25.js
           node --check inject-v1.4.25.js
+          node --check pack-2601-2700-v1.4.26.js
+          node --check inject-v1.4.26.js
       - name: Build stable through Rank 1000
         run: |
           rm -rf _site
@@ -146,29 +148,33 @@ jobs:
         run: node inject-v1.4.24.js _site/index.html
       - name: Audit and inject Rank 2501-2600
         run: node inject-v1.4.25.js _site/index.html
-      - name: Final Rank 2600 UI and regression audit
+      - name: Audit and inject Rank 2601-2700
+        run: node inject-v1.4.26.js _site/index.html
+      - name: Final Rank 2700 UI and regression audit
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path('_site/index.html')
           s=p.read_text()
           replacements={
-            'FSRS · v1.4.19':'FSRS · v1.4.25',
-            'Web公開版 v1.4.19':'Web公開版 v1.4.25',
-            '教材化済み：Rank 1–2000':'教材化済み：Rank 1–2600'
+            'FSRS · v1.4.19':'FSRS · v1.4.26',
+            'Web公開版 v1.4.19':'Web公開版 v1.4.26',
+            '教材化済み：Rank 1–2000':'教材化済み：Rank 1–2700'
           }
           for old,new in replacements.items():
               if old not in s:
                   raise SystemExit(f'UI label missing: {old}')
               s=s.replace(old,new)
           required=[
-            'const APP_VERSION="1.4.25";',
+            'const APP_VERSION="1.4.26";',
             '아버님은 지금 집에 계세요.',
             '억지로 먹지 않아도 돼요.',
             '그 영화를 보고 정말 감동했어요.',
             '모두가 평화롭게 살면 좋겠어요.',
             '아이의 개인정보 보호가 중요해요.',
             '자기 전에 만화를 조금 읽어요.',
+            '집에 가는 길에 편의점에 들렀어요.',
+            '아직 확신은 없지만 한번 해 볼게요.',
             'id="startBtn"','id="showAnswerBtn"','id="knownBtn"',
             'id="saveSettingsBtn"','id="cloudSyncNowBtn"','id="exportBtn"','id="importProgress"',
             'document.getElementById("startBtn").addEventListener("click"',
@@ -191,12 +197,12 @@ jobs:
           push=s.rfind('PACK.push(',0,ready)
           if not (0 <= pack < push < ready):
               raise SystemExit(f'PACK initialization order invalid: {pack}, {push}, {ready}')
-          if s.count('"rank": 2501') != 1 or s.count('"rank": 2600') != 1:
-              raise SystemExit('Rank 2501/2600 occurrence audit failed')
-          if s.count('"tts_text":') < 200 or s.count('"grammar_links":') < 200:
+          if s.count('"rank": 2601') != 1 or s.count('"rank": 2700') != 1:
+              raise SystemExit('Rank 2601/2700 occurrence audit failed')
+          if s.count('"tts_text":') < 300 or s.count('"grammar_links":') < 300:
               raise SystemExit('enriched card fields missing')
           p.write_text(s)
-          print('OK final Rank 2600 UI/buttons/events/SRS-settings-sync keys/PACK order/cloud regression audit')
+          print('OK final Rank 2700 UI/buttons/events/SRS-settings-sync keys/PACK order/cloud regression audit')
           PY
       - name: Finalize app shell
         run: |
