@@ -1,4 +1,4 @@
-const CACHE = "korean-daily-3000-direct-v1.4.16-cachefix2";
+const CACHE = "korean-daily-3000-direct-v1.5.0-daily5000";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {
