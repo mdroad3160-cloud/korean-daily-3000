@@ -31,18 +31,19 @@ jobs:
           s=p.read_text()
           pairs=[
             (r'\nconst ${next}=',r'\n(?:const|let) ${next}='),
+            ("function parseConst(name,next){const re=new RegExp(`const ${name}=(\\\\[.*?\\\\]);\\\\n(?:const|let) ${next}=`,`s`);const m=src.match(re);if(!m)throw new Error(`Cannot parse ${name}`);return JSON.parse(m[1]);}","function parseConst(name){const re=new RegExp(`const ${name}=(\\\\[.*?\\\\]);`,`s`);const m=src.match(re);if(!m)throw new Error(`Cannot parse ${name}`);return JSON.parse(m[1]);}"),
             ("const stem=r.word.replaceAll('-','').replace(/하다$/,'').replace(/다$/,'');if(stem&&!example.includes(stem))throw new Error(`headword absent @${rank} ${r.word}: ${example}`);","const stem=r.word.replaceAll('-','').replace(/하다$/,'').replace(/다$/,'');"),
             ("const rankSeen=new Set(),exampleSeen=new Map();\nfor(const c of out){if(rankSeen.has(c.rank))throw new Error(`duplicate rank ${c.rank}`);rankSeen.add(c.rank);if(c.example){const e=c.example.trim();if(exampleSeen.has(e))throw new Error(`duplicate example ranks ${exampleSeen.get(e)},${c.rank}`);exampleSeen.set(e,c.rank);}}","const rankSeen=new Set();\nfor(const c of out){if(rankSeen.has(c.rank))throw new Error(`duplicate rank ${c.rank}`);rankSeen.add(c.rank);}"),
             ('if(!G.has(g))throw new Error(`broken grammar rank ${g} @${c.rank}`);if(!src.includes(`#g${g}`)&&!src.includes(`id="g${g}"`))throw new Error(`grammar link target absent g${g} @${c.rank}`);','if(!G.has(g))throw new Error(`broken grammar rank ${g} @${c.rank}`);'),
-            ("const pm=src.match(/let PACK=(\\[.*?\\]);\\nconst READY=/s);","const pm=src.match(/let PACK=(\\[.*?\\]);\\n/s);"),
+            ("const pm=src.match(/let PACK=(\\[.*?\\]);\\nconst READY=/s);","const pm=src.match(/(?:const|let) PACK=(\\[.*?\\]);\\n/s);"),
             ("const priorExamples=new Set(PACK.filter(x=>x.example).map(x=>x.example.trim()));","const priorExamples=new Set([...src.matchAll(/\\\"example\\\":\\\"([^\\\"]+)\\\"/g)].map(m=>m[1]));"),
-            ("const arr=JSON.stringify(PACK);src=src.replace(/let PACK=\\[.*?\\];\\nconst READY=/s,`let PACK=${arr};\\nconst READY=`);","const arr=JSON.stringify(PACK);src=src.replace(/let PACK=\\[.*?\\];\\n/s,`let PACK=${arr};\\n`);"),
-            ("const p2=src.match(/let PACK=(\\[.*?\\]);\\nconst READY=/s);","const p2=src.match(/let PACK=(\\[.*?\\]);\\n/s);"),
+            ("const arr=JSON.stringify(PACK);src=src.replace(/let PACK=\\[.*?\\];\\nconst READY=/s,`let PACK=${arr};\\nconst READY=`);","const arr=JSON.stringify(PACK);src=src.replace(/((?:const|let) PACK=)\\[.*?\\];\\n/s,`$1${arr};\\n`);"),
+            ("const p2=src.match(/let PACK=(\\[.*?\\]);\\nconst READY=/s);","const p2=src.match(/(?:const|let) PACK=(\\[.*?\\]);\\n/s);"),
             ("PATCH_VERSION='0.6.2001-2100'","PATCH_VERSION='1.4.20'")
           ]
           for old,new in pairs:
               if old not in s:
-                  raise SystemExit('compatibility pattern not found: '+old[:80])
+                  raise SystemExit('compatibility pattern not found: '+old[:100])
               s=s.replace(old,new,1)
           p.write_text(s)
           PY
