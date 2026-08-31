@@ -1,0 +1,1 @@
+Rank 2601-2700 batch completed; trigger existing GitHub Pages workflow after audit fix.
