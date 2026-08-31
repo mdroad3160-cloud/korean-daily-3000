@@ -8,10 +8,12 @@ for(const name of ['RANK','PACK','GRAMMAR']){
   if(!re.test(s)) throw new Error(`${name} declaration not found`);
   s=s.replace(re,`const ${name}=`);
 }
-for(const f of ['pack-2701-2800-v1.4.27.js','inject-v1.4.27.js','finalize-v1.4.27.js','pack-3001-3100-v1.5.0.js','inject-v1.5.0.js'])cp.execFileSync(process.execPath,['--check',f],{stdio:'inherit'});
+for(const f of ['pack-2701-2800-v1.4.27.js','inject-v1.4.27.js','finalize-v1.4.27.js','pack-3001-3100-v1.5.0.js','inject-v1.5.0.js','pack-3101-3200-v1.5.1.js','inject-v1.5.1.js'])cp.execFileSync(process.execPath,['--check',f],{stdio:'inherit'});
 const hook="\nrequire('./inject-v1.4.27.js');\nrequire('./finalize-v1.4.27.js');\n";
 const injector='inject-v1.4.26.js';let i=fs.readFileSync(injector,'utf8');if(!i.includes("require('./inject-v1.4.27.js')"))fs.writeFileSync(injector,i+hook);
 const daily5000Hook="\nrequire('./inject-v1.5.0.js');\n";
 const injector3000='inject-v1.4.29.js';let j=fs.readFileSync(injector3000,'utf8');if(!j.includes("require('./inject-v1.5.0.js')"))fs.writeFileSync(injector3000,j+daily5000Hook);
+const daily5000NextHook="\nrequire('./inject-v1.5.1.js');\n";
+const injector3100='inject-v1.5.0.js';let k=fs.readFileSync(injector3100,'utf8');if(!k.includes("require('./inject-v1.5.1.js')"))fs.writeFileSync(injector3100,k+daily5000NextHook);
 fs.writeFileSync(output,s);
-console.log('Normalized build source declarations; established injectors plus Daily5000 Rank 3001-3100 chain prepared');
+console.log('Normalized build source declarations; established injectors plus Daily5000 Rank 3001-3200 chain prepared');
