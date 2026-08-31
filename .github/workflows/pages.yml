@@ -55,6 +55,8 @@ jobs:
           node --check inject-v1.4.27.js
           node --check pack-2801-2900-v1.4.28.js
           node --check inject-v1.4.28.js
+          node --check pack-2901-3000-v1.4.29.js
+          node --check inject-v1.4.29.js
 
       - name: Build stable through Rank 1000
         run: |
@@ -108,26 +110,29 @@ jobs:
       # it runs automatically after Rank 2601-2700. Do not inject v1.4.27 twice.
       - name: Audit and inject Rank 2801-2900
         run: node inject-v1.4.28.js _site/index.html
+      - name: Audit and inject Rank 2901-3000
+        run: node inject-v1.4.29.js _site/index.html
 
-      - name: Final Rank 2900 UI and regression audit
+      - name: Final Rank 3000 UI and regression audit
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
           p=Path('_site/index.html')
           s=p.read_text()
           replacements={
-            'FSRS · v1.4.27':'FSRS · v1.4.28',
-            'Web公開版 v1.4.27':'Web公開版 v1.4.28',
-            '教材化済み：Rank 1–2800':'教材化済み：Rank 1–2900'
+            'FSRS · v1.4.27':'FSRS · v1.4.29',
+            'Web公開版 v1.4.27':'Web公開版 v1.4.29',
+            '教材化済み：Rank 1–2800':'教材化済み：Rank 1–3000'
           }
           for old,new in replacements.items():
               if old not in s: raise SystemExit(f'UI label missing: {old}')
               s=s.replace(old,new)
           required=[
-            'const APP_VERSION="1.4.28";',
-            '오늘은 회색 코트를 입었어요.',
-            '오늘 숙제는 벌써 끝냈어요.',
-            '앱을 최신 버전으로 업데이트했어요.',
+            'const APP_VERSION="1.4.29";',
+            '이번 여행을 망치고 싶지 않아요.',
+            '요즘 주식을 조금 공부하고 있어요.',
+            '이 옷은 색이 정말 고와요.',
             'id="startBtn"','id="showAnswerBtn"','id="knownBtn"',
             'id="saveSettingsBtn"','id="cloudSyncNowBtn"','id="exportBtn"','id="importProgress"',
             'document.getElementById("startBtn").addEventListener("click"',
@@ -148,11 +153,23 @@ jobs:
           ready=s.find('const READY=new Map(PACK.filter')
           push=s.rfind('PACK.push(',0,ready)
           if not (0 <= pack < push < ready): raise SystemExit(f'PACK initialization order invalid: {pack}, {push}, {ready}')
-          for rank in (2701,2800,2801,2900):
-              if s.count(f'"rank": {rank}') != 1: raise SystemExit(f'Rank {rank} occurrence audit failed')
-          if s.count('"tts_text":') < 500 or s.count('"grammar_links":') < 500: raise SystemExit('enriched card fields missing')
+          prefix=s[:ready]
+          for rank in (2701,2800,2801,2900,2901,3000):
+              if len(re.findall(rf'"rank"\s*:\s*{rank}(?=[,}}])',prefix)) != 1:
+                  raise SystemExit(f'Rank {rank} occurrence audit failed')
+          last=s[s.rfind('PACK.push(',0,ready):ready]
+          if len(re.findall(r'"rank"\s*:\s*(?:29\d\d|3000)(?=[,}])',last)) != 100:
+              raise SystemExit('Rank 2901-3000 card count audit failed')
+          for field in ('"tts_text":','"grammar_links":','"example_jp":','"word_notes":'):
+              if last.count(field) != 100: raise SystemExit(f'Rank 2901-3000 field count failed: {field}')
+          if last.count('文法ワンポイント：') != 100 or last.count('例文内の全語・語形：') != 100:
+              raise SystemExit('Rank 2901-3000 explanation enrichment failed')
+          if '例文内の語彙。日本語訳と対応して意味を確認' in last:
+              raise SystemExit('Rank 2901-3000 contains unresolved token explanation')
+          if s.count('"tts_text":') < 600 or s.count('"grammar_links":') < 600:
+              raise SystemExit('global enriched card fields missing')
           p.write_text(s)
-          print('OK final Rank 2900 UI/buttons/events/SRS-settings-sync keys/PACK order/cloud regression audit')
+          print('OK final Rank 3000 UI/buttons/events/SRS-settings-sync keys/PACK order/cloud/token regression audit')
           PY
 
       - name: Finalize app shell
