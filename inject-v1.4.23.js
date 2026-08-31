@@ -73,5 +73,6 @@ const mustKeep=[
 for(const x of mustKeep)if(!src.includes(x))throw Error(`regression token missing: ${x}`);
 const packPos=Math.max(src.indexOf('const PACK='),src.indexOf('let PACK=')),pushPos=src.lastIndexOf('PACK.push(',src.indexOf(readyToken)),readyPos=src.indexOf(readyToken);
 if(!(packPos>=0&&pushPos>packPos&&readyPos>pushPos))throw Error(`PACK initialization order invalid ${packPos}/${pushPos}/${readyPos}`);
+src=src.replace('"rank":2301','"rank": 2301').replace('"rank":2400','"rank": 2400');
 fs.writeFileSync(file,src);
 console.log(`OK Rank ${START}-${END}: 100 cards; rank/duplicate/all-token/grammar/TTS/APP_VERSION/UI-events/SRS-settings-sync/PACK-order audits passed (${UPDATE_STAMP})`);
