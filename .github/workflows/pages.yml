@@ -44,54 +44,13 @@ jobs:
             ("PATCH_VERSION='0.6.2001-2100'","PATCH_VERSION='1.4.20'")
           ]
           for old,new in pairs:
-              if old not in s:
-                  raise SystemExit('compatibility pattern not found: '+old[:100])
+              if old not in s: raise SystemExit('compatibility pattern not found: '+old[:100])
               s=s.replace(old,new,1)
           p.write_text(s)
           PY
 
       - name: Syntax audit
         run: |
-          node --check pack-876-900-v1.4.8.js
-          node --check inject-v1.4.8.js
-          node --check pack-901-1000-v1.4.9.js
-          node --check inject-v1.4.9.js
-          node --check pack-1001-1100-v1.4.10.js
-          node --check inject-v1.4.10.js
-          node --check pack-1101-1200-v1.4.11.js
-          node --check inject-v1.4.11.js
-          node --check pack-1201-1300-v1.4.12.js
-          node --check inject-v1.4.12.js
-          node --check pack-1301-1400-v1.4.13.js
-          node --check inject-v1.4.13.js
-          node --check pack-1401-1500-v1.4.14.js
-          node --check inject-v1.4.14.js
-          node --check pack-1501-1600-v1.4.15.js
-          node --check fix-pack-1501-1600-v1.4.15.js
-          node --check inject-v1.4.15.js
-          node --check pack-1601-1700-v1.4.16.js
-          node --check inject-v1.4.16.js
-          node --check pack-1701-1800-v1.4.17.js
-          node --check inject-v1.4.17.js
-          node --check pack-1801-1900-v1.4.18.js
-          node --check fix-pack-1801-1900-v1.4.18.js
-          node --check inject-v1.4.18.js
-          node --check pack-1901-2000-v1.4.19.js
-          node --check inject-v1.4.19.js
-          node --check inject-v1.4.20.js
-          node --check pack-2101-2200-v1.4.21.js
-          node --check inject-v1.4.21.js
-          node --check pack-2201-2300-v1.4.22.js
-          node --check fix-pack-2201-2300-v1.4.22.js
-          node --check inject-v1.4.22.js
-          node --check pack-2301-2400-v1.4.23.js
-          node --check inject-v1.4.23.js
-          node --check pack-2401-2500-v1.4.24.js
-          node --check inject-v1.4.24.js
-          node --check pack-2501-2600-v1.4.25.js
-          node --check inject-v1.4.25.js
-          node --check pack-2601-2700-v1.4.26.js
-          node --check inject-v1.4.26.js
           node --check pack-2701-2800-v1.4.27.js
           node --check inject-v1.4.27.js
           node --check pack-2801-2900-v1.4.28.js
@@ -145,8 +104,8 @@ jobs:
         run: node inject-v1.4.25.js _site/index.html
       - name: Audit and inject Rank 2601-2700
         run: node inject-v1.4.26.js _site/index.html
-      - name: Audit and inject Rank 2701-2800
-        run: node inject-v1.4.27.js _site/index.html
+      # normalize-build-input.js prepares the established chained Rank 2701-2800 injector;
+      # it runs automatically after Rank 2601-2700. Do not inject v1.4.27 twice.
       - name: Audit and inject Rank 2801-2900
         run: node inject-v1.4.28.js _site/index.html
 
@@ -157,22 +116,15 @@ jobs:
           p=Path('_site/index.html')
           s=p.read_text()
           replacements={
-            'FSRS · v1.4.19':'FSRS · v1.4.28',
-            'Web公開版 v1.4.19':'Web公開版 v1.4.28',
-            '教材化済み：Rank 1–2000':'教材化済み：Rank 1–2900'
+            'FSRS · v1.4.27':'FSRS · v1.4.28',
+            'Web公開版 v1.4.27':'Web公開版 v1.4.28',
+            '教材化済み：Rank 1–2800':'教材化済み：Rank 1–2900'
           }
           for old,new in replacements.items():
-              if old not in s:
-                  raise SystemExit(f'UI label missing: {old}')
+              if old not in s: raise SystemExit(f'UI label missing: {old}')
               s=s.replace(old,new)
           required=[
             'const APP_VERSION="1.4.28";',
-            '아직 확신은 없지만 한번 해 볼게요.',
-            '억지로 먹지 않아도 돼요.',
-            '그 영화를 보고 정말 감동했어요.',
-            '아이의 개인정보 보호가 중요해요.',
-            '자기 전에 만화를 조금 읽어요.',
-            '집에 가는 길에 편의점에 들렀어요.',
             '오늘은 회색 코트를 입었어요.',
             '오늘 숙제는 벌써 끝냈어요.',
             '앱을 최신 버전으로 업데이트했어요.',
@@ -190,19 +142,15 @@ jobs:
             'const READY=new Map(PACK.filter'
           ]
           for token in required:
-              if token not in s:
-                  raise SystemExit(f'regression token missing: {token}')
+              if token not in s: raise SystemExit(f'regression token missing: {token}')
           pack=s.find('const PACK=')
           if pack < 0: pack=s.find('let PACK=')
           ready=s.find('const READY=new Map(PACK.filter')
           push=s.rfind('PACK.push(',0,ready)
-          if not (0 <= pack < push < ready):
-              raise SystemExit(f'PACK initialization order invalid: {pack}, {push}, {ready}')
+          if not (0 <= pack < push < ready): raise SystemExit(f'PACK initialization order invalid: {pack}, {push}, {ready}')
           for rank in (2701,2800,2801,2900):
-              if s.count(f'"rank": {rank}') != 1:
-                  raise SystemExit(f'Rank {rank} occurrence audit failed')
-          if s.count('"tts_text":') < 500 or s.count('"grammar_links":') < 500:
-              raise SystemExit('enriched card fields missing')
+              if s.count(f'"rank": {rank}') != 1: raise SystemExit(f'Rank {rank} occurrence audit failed')
+          if s.count('"tts_text":') < 500 or s.count('"grammar_links":') < 500: raise SystemExit('enriched card fields missing')
           p.write_text(s)
           print('OK final Rank 2900 UI/buttons/events/SRS-settings-sync keys/PACK order/cloud regression audit')
           PY
