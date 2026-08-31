@@ -33,6 +33,8 @@ jobs:
         run: node extract-ranks-1701-1800.js
       - name: Next Rank 1801-1900 slice
         run: node extract-ranks-1801-1900.js
+      - name: Next Rank 1901-2000 slice
+        run: node extract-ranks-1901-2000.js
       - name: Syntax audit
         run: |
           node --check pack-876-900-v1.4.8.js
