@@ -23,6 +23,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Rank 2001-2100 parser compatibility
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('inject-v1.4.20.js')
+          s=p.read_text()
+          old=r'\nconst ${next}='
+          new=r'\n(?:const|let) ${next}='
+          if old not in s:
+              raise SystemExit('parser pattern not found')
+          p.write_text(s.replace(old,new,1))
+          PY
       - name: Next Rank slice
         run: node extract-next-ranks.js
       - name: Next Rank 1501-1600 slice
