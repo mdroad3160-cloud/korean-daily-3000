@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('fs');
+const p='inject-v1.4.29.js';
+let s=fs.readFileSync(p,'utf8');
+const old='for(const m of src.slice(0,readyPos).matchAll(/"rank"\\s*:\\s*(\\d+)/g))oldRanks.add(Number(m[1]));';
+const neu='for(const m of src.slice(packPos,readyPos).matchAll(/"rank"\\s*:\\s*(\\d+)/g))oldRanks.add(Number(m[1]));';
+if(!s.includes(old)) throw new Error('Rank materialization scope patch target not found');
+s=s.replace(old,neu);
+fs.writeFileSync(p,s);
+console.log('Fixed Rank 2901-3000 materialization audit to inspect PACK region only.');
