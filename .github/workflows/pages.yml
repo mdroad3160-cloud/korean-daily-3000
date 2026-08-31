@@ -170,8 +170,8 @@ jobs:
                   raise SystemExit(f'regression token missing: {token}')
           pack=s.find('const PACK=')
           if pack < 0: pack=s.find('let PACK=')
-          push=s.rfind('PACK.push(')
           ready=s.find('const READY=new Map(PACK.filter')
+          push=s.rfind('PACK.push(',0,ready)
           if not (0 <= pack < push < ready):
               raise SystemExit(f'PACK initialization order invalid: {pack}, {push}, {ready}')
           p.write_text(s)
