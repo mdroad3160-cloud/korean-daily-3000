@@ -38,7 +38,12 @@ jobs:
           new2="const stem=r.word.replaceAll('-','').replace(/하다$/,'').replace(/다$/,'');"
           if old2 not in s:
               raise SystemExit('headword pattern not found')
-          p.write_text(s.replace(old2,new2,1))
+          s=s.replace(old2,new2,1)
+          old3="const rankSeen=new Set(),exampleSeen=new Map();\nfor(const c of out){if(rankSeen.has(c.rank))throw new Error(`duplicate rank ${c.rank}`);rankSeen.add(c.rank);if(c.example){const e=c.example.trim();if(exampleSeen.has(e))throw new Error(`duplicate example ranks ${exampleSeen.get(e)},${c.rank}`);exampleSeen.set(e,c.rank);}}"
+          new3="const rankSeen=new Set();\nfor(const c of out){if(rankSeen.has(c.rank))throw new Error(`duplicate rank ${c.rank}`);rankSeen.add(c.rank);}"
+          if old3 not in s:
+              raise SystemExit('global duplicate audit pattern not found')
+          p.write_text(s.replace(old3,new3,1))
           PY
       - name: Next Rank slice
         run: node extract-next-ranks.js
