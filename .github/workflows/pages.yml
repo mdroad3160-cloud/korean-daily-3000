@@ -92,6 +92,9 @@ jobs:
           node --check inject-v1.4.20.js
           node --check pack-2101-2200-v1.4.21.js
           node --check inject-v1.4.21.js
+          node --check pack-2201-2300-v1.4.22.js
+          node --check fix-pack-2201-2300-v1.4.22.js
+          node --check inject-v1.4.22.js
       - name: Build stable through Rank 1000
         run: |
           rm -rf _site
@@ -129,25 +132,27 @@ jobs:
         run: node inject-v1.4.20.js _site/index.html
       - name: Audit and inject Rank 2101-2200
         run: node inject-v1.4.21.js _site/index.html
-      - name: Final Rank 2200 UI and regression audit
+      - name: Audit and inject Rank 2201-2300
+        run: NODE_OPTIONS="--require=$PWD/fix-pack-2201-2300-v1.4.22.js" node inject-v1.4.22.js _site/index.html
+      - name: Final Rank 2300 UI and regression audit
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path('_site/index.html')
           s=p.read_text()
           replacements={
-            'FSRS · v1.4.19':'FSRS · v1.4.21',
-            'Web公開版 v1.4.19':'Web公開版 v1.4.21',
-            '教材化済み：Rank 1–2000':'教材化済み：Rank 1–2200'
+            'FSRS · v1.4.19':'FSRS · v1.4.22',
+            'Web公開版 v1.4.19':'Web公開版 v1.4.22',
+            '教材化済み：Rank 1–2000':'教材化済み：Rank 1–2300'
           }
           for old,new in replacements.items():
               if old not in s:
                   raise SystemExit(f'UI label missing: {old}')
               s=s.replace(old,new)
           required=[
-            'const APP_VERSION="1.4.21";',
-            '욕심을 너무 부리지 않는 게 좋아요.',
-            '산이 여름이 되면 아주 푸르러요.',
+            'const APP_VERSION="1.4.22";',
+            '이 노래 가사를 잘 못 알아들었어요.',
+            '다음 주에 사흘 동안 휴가를 쓸 거예요.',
             'id="startBtn"','id="showAnswerBtn"','id="knownBtn"',
             'id="saveSettingsBtn"','id="cloudSyncNowBtn"','id="exportBtn"','id="importProgress"',
             'document.getElementById("startBtn").addEventListener("click"',
@@ -171,7 +176,7 @@ jobs:
           if not (0 <= pack < push < ready):
               raise SystemExit(f'PACK initialization order invalid: {pack}, {push}, {ready}')
           p.write_text(s)
-          print('OK final Rank 2200 UI/buttons/events/SRS-settings-sync keys/PACK order/cloud regression audit')
+          print('OK final Rank 2300 UI/buttons/events/SRS-settings-sync keys/PACK order/cloud regression audit')
           PY
       - name: Finalize app shell
         run: |
