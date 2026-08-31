@@ -73,6 +73,7 @@ jobs:
           node --check raw-1901-2000-v1.4.19.js
           node --check pack-1901-2000-v1.4.19.js
           node --check inject-v1.4.19.js
+          node --check inject-v1.4.20.js
       - name: Build stable through Rank 1000
         run: |
           rm -rf _site
@@ -106,6 +107,8 @@ jobs:
         run: NODE_OPTIONS="--require=$PWD/fix-pack-1801-1900-v1.4.18.js" node inject-v1.4.18.js _site/index.html
       - name: Audit and inject Rank 1901-2000
         run: node inject-v1.4.19.js _site/index.html
+      - name: Audit and inject Rank 2001-2100
+        run: node inject-v1.4.20.js _site/index.html
       - name: Finalize app shell
         run: |
           cp manifest.webmanifest _site/manifest.webmanifest
