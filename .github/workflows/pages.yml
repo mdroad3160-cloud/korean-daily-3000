@@ -35,6 +35,8 @@ jobs:
           node --check inject-v1.4.11.js
           node --check pack-1201-1300-v1.4.12.js
           node --check inject-v1.4.12.js
+          node --check pack-1301-1400-v1.4.13.js
+          node --check inject-v1.4.13.js
       - name: Build stable through Rank 1000
         run: |
           rm -rf _site
@@ -82,6 +84,22 @@ jobs:
         run: DUP_MIN=1276 DUP_MAX=1300 AUDIT_STOP_AFTER=dupes node inject-v1.4.12.js _site/index.html
       - name: Audit and inject Rank 1201-1300
         run: node inject-v1.4.12.js _site/index.html
+      - name: Audit cards and token coverage 1301-1400
+        run: AUDIT_STOP_AFTER=cards node inject-v1.4.13.js _site/index.html
+      - name: Audit Rank mapping 1301-1400
+        run: AUDIT_STOP_AFTER=rank node inject-v1.4.13.js _site/index.html
+      - name: Audit grammar links 1301-1400
+        run: AUDIT_STOP_AFTER=grammar node inject-v1.4.13.js _site/index.html
+      - name: Audit duplicates 1301-1325
+        run: DUP_MIN=1301 DUP_MAX=1325 AUDIT_STOP_AFTER=dupes node inject-v1.4.13.js _site/index.html
+      - name: Audit duplicates 1326-1350
+        run: DUP_MIN=1326 DUP_MAX=1350 AUDIT_STOP_AFTER=dupes node inject-v1.4.13.js _site/index.html
+      - name: Audit duplicates 1351-1375
+        run: DUP_MIN=1351 DUP_MAX=1375 AUDIT_STOP_AFTER=dupes node inject-v1.4.13.js _site/index.html
+      - name: Audit duplicates 1376-1400
+        run: DUP_MIN=1376 DUP_MAX=1400 AUDIT_STOP_AFTER=dupes node inject-v1.4.13.js _site/index.html
+      - name: Audit and inject Rank 1301-1400
+        run: node inject-v1.4.13.js _site/index.html
       - name: Finalize app shell
         run: |
           cp manifest.webmanifest _site/manifest.webmanifest
