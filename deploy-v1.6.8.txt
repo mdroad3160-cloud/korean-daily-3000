@@ -1,0 +1,1 @@
+Daily5000 v1.6.8 deployment trigger. Preserve existing GitHub Pages URL, SRS/localStorage keys, cloud sync and network-first service worker policy.
