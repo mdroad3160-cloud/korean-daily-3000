@@ -1,0 +1,1 @@
+Daily5000 v1.6.6 deployment trigger. Adds the next unique practical vocabulary batch while preserving existing SRS/settings/storage keys and network-first service worker behavior.
