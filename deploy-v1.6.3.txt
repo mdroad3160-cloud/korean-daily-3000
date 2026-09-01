@@ -1,0 +1,1 @@
+Daily5000 v1.6.3: extend from Rank 4301 with unique practical vocabulary; preserve SRS/settings/sync keys and existing Pages deployment.
