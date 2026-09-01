@@ -1,0 +1,2 @@
+Daily5000 v1.6.0
+Rank 4001-4100 candidate set, injector, regression audit, and network-first cache refresh.
