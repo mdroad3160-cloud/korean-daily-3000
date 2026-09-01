@@ -1,0 +1,1 @@
+Daily5000 v1.6.3a: expand Rank 4301-4400 with unique practical vocabulary; preserve existing SRS/settings/sync keys and network-first service worker.
