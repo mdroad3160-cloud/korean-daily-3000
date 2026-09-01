@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('fs');
 const START=3501,END=3600,VERSION='1.5.5';
-const file=process.argv[2]||'_site/index.html';let src=fs.readFileSync(file,'utf8');const candidates=require('./pack-3501-3600-v1.5.5.js');
+const file=process.argv[2]||'_site/index.html';let src=fs.readFileSync(file,'utf8');const candidates=[...require('./pack-3501-3600-v1.5.5.js'),...require('./pack-3501-3600-extra-v1.5.5.js')];
 function parse(name){const m=src.match(new RegExp(`(?:const|let)\\s+${name}=(\\[.*?\\]);`,'s'));if(!m)throw Error(name+' missing');return {m:m[0],d:JSON.parse(m[1])};}
 const R=parse('RANK'),P=parse('PACK'),G=parse('GRAMMAR');const norm=s=>String(s||'').replace(/[-\\s]/g,'').trim();const seen=new Set(R.d.map(x=>norm(x.word))),selected=[];
 for(const row of candidates){if(!Array.isArray(row)||row.length<5)throw Error('bad candidate');if(seen.has(norm(row[0]))||selected.some(x=>norm(x[0])===norm(row[0])))continue;selected.push(row);if(selected.length===100)break;}if(selected.length!==100)throw Error('only '+selected.length+' unique candidates');
