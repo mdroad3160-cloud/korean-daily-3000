@@ -3,7 +3,7 @@ const fs=require('fs');
 const START=3401,END=3500,VERSION='1.5.4';
 const file=process.argv[2]||'_site/index.html';
 let src=fs.readFileSync(file,'utf8');
-const candidates=[...require('./pack-3401-3500-v1.5.4.js')];
+const candidates=[...require('./pack-3401-3500-v1.5.4.js'),...require('./pack-3401-3500-extra-v1.5.4.js')];
 function parse(name){const m=src.match(new RegExp(`(?:const|let)\\s+${name}=(\\[.*?\\]);`,'s'));if(!m)throw Error(name+' missing');return {m:m[0],d:JSON.parse(m[1])};}
 const R=parse('RANK'),P=parse('PACK'),G=parse('GRAMMAR');
 const norm=s=>String(s||'').replace(/[-\\s]/g,'').trim();
@@ -19,7 +19,7 @@ const grammarRanks=new Set(G.d.map(x=>Number(x.rank)));
 const baseGrammar=grammarRanks.has(9)?9:Number(G.d[0]?.rank||1);
 const clean=s=>String(s).replace(/^[“”‘’'"()[\\]{}]+|[.,!?。！？;:…~“”‘’'"()[\\]{}]+$/g,'');
 const particles=['에서는','으로부터','에게서','한테서','에게','한테','까지','부터','처럼','보다','으로','에서','과','와','랑','이랑','로','은','는','이','가','을','를','에','도','만','의'];
-function noteToken(t){const c=clean(t);for(const p of particles)if(c.endsWith(p)&&c.length>p.length)return `${c}：${c.slice(0,-p.length)}＋助詞 ${p}`;if(/해야 해요$/.test(c))return `${c}：하다＋-아/어야 하다「〜しなければならない」の丁寧形`;if(/해도 돼요$/.test(c))return `${c}：하다＋-아/어도 되다「〜してもよい」の丁寧形`;if(/했어요$/.test(c))return `${c}：하다系用言の過去丁寧形 -했어요`;if(/됐어요$|됐어요$/.test(c))return `${c}：되다 の過去丁寧形 됐어요`;if(/았어요$|었어요$/.test(c))return `${c}：用言の過去丁寧形 -았/었어요`;if(/할게요$/.test(c))return `${c}：하다＋-(으)ㄹ게요「〜しますね」`;if(/세요$/.test(c))return `${c}：丁寧な依頼・命令 -(으)세요`;if(/해요$|아요$|어요$/.test(c))return `${c}：用言の現在丁寧形 -아/어요`;if(/해서$|아서$|어서$/.test(c))return `${c}：理由・順序 -아/어서`;if(/니까$/.test(c))return `${c}：理由・発見の契機 -(으)니까`;if(/면$/.test(c))return `${c}：条件 -(으)면`;if(/려고$/.test(c))return `${c}：意図・目的 -(으)려고`;if(/고$/.test(c))return `${c}：接続語尾 -고「〜して／〜で」`;return `${c}：例文中の語。日本語訳の対応箇所と合わせて基本意味・文中の役割を確認`;}
+function noteToken(t){const c=clean(t);for(const p of particles)if(c.endsWith(p)&&c.length>p.length)return `${c}：${c.slice(0,-p.length)}＋助詞 ${p}`;if(/해야 해요$/.test(c))return `${c}：하다＋-아/어야 하다「〜しなければならない」の丁寧形`;if(/해도 돼요$/.test(c))return `${c}：하다＋-아/어도 되다「〜してもよい」の丁寧形`;if(/했어요$/.test(c))return `${c}：하다系用言の過去丁寧形 -했어요`;if(/됐어요$/.test(c))return `${c}：되다 の過去丁寧形 됐어요`;if(/았어요$|었어요$/.test(c))return `${c}：用言の過去丁寧形 -았/었어요`;if(/할게요$/.test(c))return `${c}：하다＋-(으)ㄹ게요「〜しますね」`;if(/세요$/.test(c))return `${c}：丁寧な依頼・命令 -(으)세요`;if(/해요$|아요$|어요$/.test(c))return `${c}：用言の現在丁寧形 -아/어요`;if(/해서$|아서$|어서$/.test(c))return `${c}：理由・順序 -아/어서`;if(/니까$/.test(c))return `${c}：理由・発見の契機 -(으)니까`;if(/면$/.test(c))return `${c}：条件 -(으)면`;if(/려고$/.test(c))return `${c}：意図・目的 -(으)려고`;if(/고$/.test(c))return `${c}：接続語尾 -고「〜して／〜で」`;return `${c}：例文中の語。日本語訳の対応箇所と合わせて基本意味・文中の役割を確認`;}
 const prior=new Set(P.d.map(x=>x.example).filter(Boolean));
 const cards=selected.map((r,i)=>{const [word,meaning,example,jp,note]=r,rank=START+i;if(prior.has(example))throw Error('duplicate example '+rank);prior.add(example);const form_notes={};for(const t of example.split(/\\s+/).map(clean).filter(Boolean))form_notes[t]=noteToken(t);return {rank,word,meaning,example,example_jp:jp,jp,translation:jp,form_notes,grammar:[baseGrammar],grammar_ranks:[baseGrammar],grammar_links:[baseGrammar],grammar_point:'文法ワンポイント：해요体を中心に、例文内の助詞・活用をform_notesで確認。',note,word_notes:note,tts:example,tts_text:example,ready:true};});
 const pack=[...P.d,...cards];
