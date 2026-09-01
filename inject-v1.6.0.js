@@ -2,7 +2,7 @@
 const fs=require('fs');const START=4001,END=4100,VERSION='1.6.0';
 const file=process.argv[2]||'_site/index.html';let src=fs.readFileSync(file,'utf8');
 function rows(x){if(Array.isArray(x))return x;return String(x||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean).map(line=>line.split('|'));}
-const candidates=[...rows(require('./pack-4001-4100-a-v1.6.0.js')),...rows(require('./pack-4001-4100-b-v1.6.0.js')),...rows(require('./pack-4001-4100-c-v1.6.0.js')),...rows(require('./pack-4001-4100-d-v1.6.0.js'))];
+const candidates=[...rows(require('./pack-4001-4100-a-v1.6.0.js')),...rows(require('./pack-4001-4100-b-v1.6.0.js')),...rows(require('./pack-4001-4100-c-v1.6.0.js')),...rows(require('./pack-4001-4100-d-v1.6.0.js')),...rows(require('./pack-4001-4100-e-v1.6.0.js'))];
 function parse(name){const m=src.match(new RegExp(`(?:const|let)\\s+${name}=(\\[.*?\\]);`,'s'));if(!m)throw Error(name+' missing');return {m:m[0],d:JSON.parse(m[1])};}
 const R=parse('RANK'),P=parse('PACK'),G=parse('GRAMMAR');const norm=s=>String(s||'').replace(/[-\\s]/g,'').trim();const seen=new Set(R.d.map(x=>norm(x.word))),priorExamples=new Set(P.d.map(x=>String(x.example||'').trim()).filter(Boolean)),selected=[],selectedExamples=new Set();
 for(const row of candidates){if(!Array.isArray(row)||row.length<5)throw Error('bad candidate');const w=norm(row[0]),ex=String(row[2]||'').trim();if(!w||!ex||seen.has(w)||selected.some(x=>norm(x[0])===w)||priorExamples.has(ex)||selectedExamples.has(ex))continue;selected.push(row);selectedExamples.add(ex);if(selected.length===100)break;}if(selected.length!==100)throw Error('only '+selected.length+' unique word/example candidates');
