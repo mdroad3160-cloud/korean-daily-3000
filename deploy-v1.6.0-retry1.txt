@@ -1,1 +1,1 @@
-Retry Daily5000 v1.6.0 after self-contained candidate parser fix.
+Retry Daily5000 v1.6.0 after candidate expansion and strict duplicate filtering.
