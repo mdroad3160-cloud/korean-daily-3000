@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('fs');const START=3901,END=4000,VERSION='1.5.9';
-const file=process.argv[2]||'_site/index.html';let src=fs.readFileSync(file,'utf8');const candidates=require('./pack-3901-4000-v1.5.9.js');
+const file=process.argv[2]||'_site/index.html';let src=fs.readFileSync(file,'utf8');const candidates=[...require('./pack-3901-4000-v1.5.9.js'),...require('./pack-3901-4000-extra-v1.5.9.js')];
 function parse(name){const m=src.match(new RegExp(`(?:const|let)\\s+${name}=(\\[.*?\\]);`,'s'));if(!m)throw Error(name+' missing');return {m:m[0],d:JSON.parse(m[1])};}
 const R=parse('RANK'),P=parse('PACK'),G=parse('GRAMMAR');const norm=s=>String(s||'').replace(/[-\\s]/g,'').trim();const seen=new Set(R.d.map(x=>norm(x.word))),priorExamples=new Set(P.d.map(x=>String(x.example||'').trim()).filter(Boolean)),selected=[],selectedExamples=new Set();
 for(const row of candidates){if(!Array.isArray(row)||row.length<5)throw Error('bad candidate');const w=norm(row[0]),ex=String(row[2]||'').trim();if(!w||!ex||seen.has(w)||selected.some(x=>norm(x[0])===w)||priorExamples.has(ex)||selectedExamples.has(ex))continue;selected.push(row);selectedExamples.add(ex);if(selected.length===100)break;}if(selected.length!==100)throw Error('only '+selected.length+' unique word/example candidates');
