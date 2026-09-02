@@ -4,9 +4,9 @@ const path=require.resolve('./inject-v1.6.16.js');
 const target=process.argv[2]||'_site/index.html';
 let code=fs.readFileSync(path,'utf8');
 code=code.replace("VERSION='1.6.16'","VERSION='1.6.19'")
-  .replace("require('./pack-next-v1.6.16.js')","require('./pack-next-v1.6.19.js')")
+  .replace("require('./pack-next-v1.6.16.js')","(require('./pack-next-v1.6.19.js')+'\\n'+require('./pack-next-v1.6.19-extra.js'))")
   .replace(/\nrequire\('child_process'\)\.execFileSync\(process\.execPath,\['inject-v1\.6\.17\.js',file\],\{stdio:'inherit'\}\);\s*$/,'\n');
-if(!code.includes("VERSION='1.6.19'")||!code.includes("pack-next-v1.6.19.js")) throw Error('v1.6.19 template rewrite failed');
+if(!code.includes("VERSION='1.6.19'")||!code.includes("pack-next-v1.6.19-extra.js")) throw Error('v1.6.19 template rewrite failed');
 new Function('require','process',code)(require,process);
 const out=fs.readFileSync(target,'utf8');
 const rm=out.match(/(?:const|let)\s+RANK=(\[.*?\]);/s);if(!rm)throw Error('final RANK missing');
