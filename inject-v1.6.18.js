@@ -7,3 +7,4 @@ code=code.replace("VERSION='1.6.16'","VERSION='1.6.18'")
   .replace(/\nrequire\('child_process'\)\.execFileSync\(process\.execPath,\['inject-v1\.6\.17\.js',file\],\{stdio:'inherit'\}\);\s*$/,'\n');
 if(!code.includes("VERSION='1.6.18'")||!code.includes("pack-next-v1.6.18.js")) throw Error('v1.6.18 template rewrite failed');
 new Function('require','process',code)(require,process);
+require('child_process').execFileSync(process.execPath,['inject-v1.6.19.js',process.argv[2]||'_site/index.html'],{stdio:'inherit'});
