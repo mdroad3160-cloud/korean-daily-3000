@@ -38,3 +38,4 @@ if(new Set(pack.map(x=>Number(x.rank))).size!==pack.length)throw Error('PACK dup
 if(cards.some(x=>priorEx.has(String(x.example||'').trim())))throw Error('example overlap');
 fs.writeFileSync(file,src);
 console.log(`Daily5000 ${VERSION}: Rank ${START}-${END} injected; selected=${selected.length}; RANK=${all.length}, PACK=${pack.length}`);
+require('child_process').execFileSync(process.execPath,['inject-v1.6.12.js',file],{stdio:'inherit'});
